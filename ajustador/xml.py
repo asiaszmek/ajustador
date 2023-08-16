@@ -161,10 +161,9 @@ class NeurordSimulation(optimize.Simulation):
             self._set_result(result)
 
     def _set_result(self, result):
-        tag = os.path.join(self.tmpdir.name, '.complete')
-        open(tag, 'w').close()
-        
-        output=[nrd_output.Output(result[i],self.stim_time) for i in range(len(result))]
+        #  result is an
+        output=[nrd_output.Output(result[i].args[4], self.stim_time)
+                for i in range(len(result))]
         output.sort(key=operator.attrgetter('injection'))
         self.output=np.array(output,dtype=object)
 
@@ -180,6 +179,5 @@ def execute(p):
 
     cmdline = ['java', '-jar', neurord_path, modelfile, outfile]
     print('+', ' '.join(shlex.quote(term) for term in cmdline), flush=True)
-    subprocess.check_call(cmdline)
-
-    return outfile
+    check_process = subprocess.run(cmdline, capture_output=True)
+    return check_process
